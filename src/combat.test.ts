@@ -94,6 +94,7 @@ describe("Combat State Machine", () => {
     it("can advance turn", () => {
       nextState = machine.transition(nextState, { type: "NEXT_TURN" });
       expect(nextState.context.currentTurn).toBe(1);
+      expect(nextState.context.currentTick).toBe(3);
       expect(nextState.context.combatants["Test"].acted).toBe(false);
       expect(nextState.context.combatants["Test2"].acted).toBe(false);
     });
