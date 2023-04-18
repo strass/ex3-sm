@@ -5,11 +5,9 @@ import {
   EventFrom,
   EventObject,
   ExtractEvent,
-  send,
   spawn,
 } from "xstate";
 import rollMachine from "./roll";
-import { choose } from "xstate/lib/actions";
 
 type CombatEvent = EventObject &
   (
@@ -53,6 +51,7 @@ const combatMachine = createMachine(
         initial: "setup",
         states: {
           setup: {
+            description: "Add combatants before requesting join battle rolls",
             on: {
               START: {
                 actions: "requestJoinBattleRolls",
@@ -62,6 +61,7 @@ const combatMachine = createMachine(
             },
           },
           joinBattle: {
+            description: "wait while combatants roll join battle",
             always: {
               cond: "allRollsComplete",
               // I wanted to do target: '..started' but
@@ -111,22 +111,16 @@ const combatMachine = createMachine(
             },
           },
         },
-
         on: {
           END_COMBAT: {
             target: "#combat.ended",
           },
         },
-
-        // find highest init
-        // set as current turn
-        // prompt actions
-        // resolve action
-        // set acted to true
-        // repeat until all acted
-        // advance turn and set acted to false
       },
-      ended: { type: "final" },
+      ended: {
+        description: "Combat has ended",
+        type: "final",
+      },
     },
   },
   {
@@ -179,15 +173,14 @@ const combatMachine = createMachine(
             ])
           ),
       }),
+      /** Sets the active tick to the highest of the active combatants
+       * Is it possible to raise to 'inactive' state if turn's over? */
       setCurrentTick: assign({
         currentTick: (context) => {
           const highest = Object.values(context.combatants)
             .filter((c) => c.acted === false)
             .sort((a, b) => (b.initiative ?? 0) - (a.initiative ?? 0));
-          if (highest.length === 0) {
-            return 0;
-          }
-          return highest[0].initiative ?? 0;
+          return highest?.[0]?.initiative ?? 0;
         },
       }),
       setActed: assign({
