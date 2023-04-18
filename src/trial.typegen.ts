@@ -16,18 +16,20 @@
           services: never;
         };
         eventsCausingActions: {
-          
+          "editRoll": "EDIT_ROLL";
+"rollDice": "ROLL";
+"spendResources": "ROLL";
         };
         eventsCausingDelays: {
           
         };
         eventsCausingGuards: {
-          
+          "isRollValid": "ROLL";
         };
         eventsCausingServices: {
           
         };
-        matchesStates: undefined;
+        matchesStates: "rolled" | "setup";
         tags: never;
       }
   

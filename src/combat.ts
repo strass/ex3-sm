@@ -32,7 +32,8 @@ const combatMachine = createMachine(
         combatants: Record<string, Combatant>;
         currentTurn: number;
         currentTick: number;
-
+        /** Stack of rolls that need to be 
+         * resolved before play can continue */
         requestedRolls: ActorRefFrom<typeof rollMachine>[];
       },
       events: {} as CombatEvent,
